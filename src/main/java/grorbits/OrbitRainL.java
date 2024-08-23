@@ -14,6 +14,8 @@ public class OrbitRainL extends Orbit {
         state = new double[]{10.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     //...initial state: {r,phi,pR,pPhi,tau,t}
 
+        System.out.println("OrbitRainL initialize 1");
+
         numPoints = 1500;
         ic = new InitialConditionsRainL(this, 0, 0.03, 20, -1, 1);//{a,invB,r,sign,dt}
         t = 0;
@@ -23,6 +25,8 @@ public class OrbitRainL extends Orbit {
     public void initialize(double a, double r, double v0, double theta0, double dt, int numPoints) {
         state = new double[]{10.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     //...initial state: {r,phi,pR,pPhi,tau,t}
+
+        System.out.println("OrbitRainL initialize");
 
         this.numPoints = numPoints;
 
@@ -153,6 +157,8 @@ class InitialConditionsRainL extends InitialConditionsL {
      * value theta0.
      */
     public void adjustV0Theta0() {
+        System.out.println("OrbitRainL.adjutxtV0Theta0");
+        
         double invB = getInvB();
         double b = 1 / invB;
         double a = getA();
@@ -171,6 +177,12 @@ class InitialConditionsRainL extends InitialConditionsL {
         double theta0;
         theta0 = Math.atan2(v0SinTheta, v0CosTheta);
         icData[3][1] = new Double(Math.toDegrees(theta0));
+
+        System.out.println("b: "+b);
+        System.out.println("drdt: "+drdt);
+        System.out.println("dphidt: "+dphidt);
+        System.out.println("v0SinTheta: "+v0SinTheta);
+        System.out.println("theta0: "+icData[3][1]);
     }
 
     /**
@@ -178,6 +190,8 @@ class InitialConditionsRainL extends InitialConditionsL {
      * invB and sign.
      */
     public void adjustEmLmSign() {
+        System.out.println("OrbitRainL.adjustEmLmSign");
+        
         double theta0 = getTheta0();
         double PI = Math.PI;
         double epsTh = 1.745329252e-3;
@@ -195,6 +209,9 @@ class InitialConditionsRainL extends InitialConditionsL {
         }
         icData[3][1] = new Double(Math.toDegrees(theta0));
 
+        System.out.println("theta0: "+icData[3][1]);
+        
+
         double a = getA();
         double r = getR();
         double dphidt = Math.sin(theta0) * Math.sqrt(a * a + r * r - 2 * r) / (r * r + a * a + 2 * a * a / r) + 2 * a / (r * (r * r + a * a + 2 * a * a / r));
@@ -205,7 +222,13 @@ class InitialConditionsRainL extends InitialConditionsL {
         } else {
             this.sign = -1;
         }
+        System.out.println("Sign: "+this.sign);
+        
+
         icData[1][1] = new Double(1 / invB); //changed!!!
+
+        System.out.println("b: "+icData[1][1]);
+        
 
     }
 
@@ -214,6 +237,8 @@ class InitialConditionsRainL extends InitialConditionsL {
      * of energy Em and angular momentum Lm.
      */
     public void computeInitialState() {
+        System.out.println("OrbitRainL.computeInitialState");
+        
     //sets and computes initial conditions r, phi, pR, pPhi from
         //given vlaue of invB
         double eps = 1e-10;
@@ -245,10 +270,23 @@ class InitialConditionsRainL extends InitialConditionsL {
         F = Math.pow((c / b) * (b * b * H - a * pPhi) / (b * b - c * c), 2) + ((b * b - a * a) * (H * H - m * m - pPhi * pPhi / (b * b))) / (b * b - c * c);
         orbit.state[0] = r;
         orbit.state[1] = phi;
-        orbit.state[2] = (c / b) * (b * b * H - a * pPhi) / (b * b - c * c) + sign * Math.sqrt(F);
+        // falonso original only=>  orbit.state[2] = (c / b) * (b * b * H - a * pPhi) / (b * b - c * c) + sign * Math.sqrt(F);
+        if (r<=2.0 && sign> 0.0){
+            orbit.state[2] = -1.0 * ( (c / b) * (b * b * H - a * pPhi) / (b * b - c * c) + sign * Math.sqrt(F) );
+        } else {
+            orbit.state[2] = (c / b) * (b * b * H - a * pPhi) / (b * b - c * c) + sign * Math.sqrt(F);
+        }
         orbit.state[3] = pPhi;
         orbit.state[4] = 0;
         orbit.state[5] = 0;
+
+        System.out.println("orbit.state[0]: "+orbit.state[0] );
+        System.out.println("orbit.state[1]: "+orbit.state[1] );
+        System.out.println("orbit.state[2]: "+orbit.state[2] );
+        System.out.println("orbit.state[3]: "+orbit.state[3] );
+        
+
+
     }
 
 }
