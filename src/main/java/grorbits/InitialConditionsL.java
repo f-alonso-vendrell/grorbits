@@ -11,6 +11,8 @@ public abstract class InitialConditionsL extends InitialConditions{
   public InitialConditionsL(Orbit orbit, double a, double invB, double r, double sign, double dt){
     super(orbit);
     this.orbit=orbit;
+    System.out.println("InitialConditionsL.InitialConditionsL 1");
+            
     initializeVariables();
     icData[0][1]=new Double(a);
     icData[1][1]=new Double(1/invB);//changed!!!
@@ -26,6 +28,9 @@ public abstract class InitialConditionsL extends InitialConditions{
     super(orbit);
     this.orbit=orbit;
     this.dt=dt;
+
+    System.out.println("InitialConditionsL.InitialConditionsL 2");
+            
     initializeVariables();
     icData[0][1]=new Double(a);
     icData[2][1]=new Double(r);
@@ -129,6 +134,8 @@ public abstract class InitialConditionsL extends InitialConditions{
   }
   
   public void setInvB(double invB){
+    System.out.println("InitialConditionsL.setInvB");
+    
     icData[1][1]= new Double(1/invB);//changed!!!
     orbit.reset();
   }
@@ -138,6 +145,8 @@ public abstract class InitialConditionsL extends InitialConditions{
   }
   
   public void setR(double r){
+    System.out.println("InitialConditionsL.setR");
+    
     double rr=r;
     if(rr<1e-10) rr=1e-10;
     icData[2][1]=new Double(rr);
@@ -145,6 +154,8 @@ public abstract class InitialConditionsL extends InitialConditions{
   }
   
   public void setDT(double dt){
+    System.out.println("InitialConditionsL.setDT");
+    
     this.dt=dt;
     orbit.odeSolver.initialize(dt);
     orbit.reset();
@@ -152,6 +163,8 @@ public abstract class InitialConditionsL extends InitialConditions{
   
   
   public void setSign(int sign){
+    System.out.println("InitialConditionsL.setSign");
+    
     this.sign=sign;
     orbit.reset();
   }

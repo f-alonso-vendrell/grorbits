@@ -14,6 +14,8 @@ public class OrbitRainM extends Orbit {
         state = new double[]{10, 0, 0, 0, 0, 0};
     //...initial state: {r,phi,pR,pPhi,tau,t}
 
+        System.out.println("OrbitRainM initialize 1");
+
         numPoints = 1500;
         ic = new InitialConditionsRainM(this, 0, 0.95, 4, 20, -1, 1);//{a,Em,Lm,r,sign,dt}
         t = 0;
@@ -25,6 +27,8 @@ public class OrbitRainM extends Orbit {
     //...initial state: {r,phi,pR,pPhi,tau,t}
 
         this.numPoints = numPoints;
+
+        System.out.println("OrbitRainM initialize");
 
         ic = new InitialConditionsRainM(this, a, r, v0, theta0, dt);
         t = 0;

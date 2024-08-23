@@ -162,6 +162,8 @@ public abstract class InitialConditionsM extends InitialConditions{
   }
   
   public void setR(double r){
+    System.out.println("Mass change property 2");
+    
     double rr=r;
     if(rr<1e-10) rr=1e-10;
     icData[3][1]=new Double(rr);

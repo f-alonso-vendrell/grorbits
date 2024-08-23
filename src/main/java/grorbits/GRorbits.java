@@ -46,6 +46,9 @@ import javax.swing.JSplitPane;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+
 /**
  * Application: GRorbits2
  * Author: Slavomir Tuleja
@@ -744,6 +747,116 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
         } else if (e.getActionCommand().equals("Plot the orbit")) {
             orbit.reset();
             orbit.computeOrbitAtOnce();
+
+            
+            System.out.println("GR Orbits plot the orbit");
+            System.out.println("ref R: "+orbit.getIC().getR());
+            System.out.println("ref a: "+orbit.getIC().getA());
+            System.out.println("ref InvB: "+orbit.getIC().getInvB());
+            System.out.println("ref Sign: "+orbit.getIC().getSign());
+            System.out.println("ref dt: "+orbit.getIC().getDT());
+            System.out.println("ref Num Points: "+orbit.getIC().getNumPoints());
+
+
+            double initial_r=orbit.getIC().getR();
+            double initial_dt=orbit.getIC().getDT();
+            int initial_numpoints=orbit.getIC().getNumPoints();
+            //int initial_numpoints=4000;
+
+            try
+            {
+                try{
+                    PrintWriter writer = new PrintWriter("..\\..\\blip_"+initial_r+".txt", "UTF-8");
+
+                    double[] inv_b_values = {0.0,0.00000001,0.0000001,0.000001,0.00001,
+                        0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008,0.0009,
+                        0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,
+                        0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,
+                        0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,
+                        0,19245,
+                        0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,
+                        0.3,0.4,0.5,0.6,0.7,0.8,0.9,
+                        1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,
+                        10.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,
+                        100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,900.0,
+                        1000.0,2000.0,3000.0,4000.0,5000.0,6000.0,7000.0,8000.0,9000.0,
+                        10000.0,20000.0,30000.0,40000.0,50000.0,60000.0,70000.0,80000.0,90000.0,
+                        100000.0,1000000.0,10000000.0,Double.POSITIVE_INFINITY};
+                        
+
+                    // double[] inv_b_values = {Double.POSITIVE_INFINITY};
+
+                    // double[] inv_b_values = {0.0};
+
+
+                    int[] signs = {-1,1};
+
+                    System.out.println("GR ORBITS NEW BLIP RUN");
+
+                    for (int index_b=0;index_b<inv_b_values.length;index_b++){
+
+                        for(int index_s=0;index_s<2;index_s++){
+
+                            Orbit myorbit = new OrbitRainL();
+                            myorbit.initializeVariables();
+                            myorbit.getIC().setR(initial_r);
+                            
+                            myorbit.numPoints = initial_numpoints;
+                            myorbit.orbitData = new Double[myorbit.numPoints][4];
+                            //initially we load initial condition to the orbitData array
+                            for (int i = 0; i < myorbit.numPoints; i++) {
+                                myorbit.orbitData[i][0] = new Double(0);
+                                myorbit.orbitData[i][1] = new Double(myorbit.ic.getR());
+                                myorbit.orbitData[i][2] = new Double(0);
+                                myorbit.orbitData[i][3] = new Double(0);
+                            }
+                            
+                            myorbit.getIC().setInvB(inv_b_values[index_b]);
+                            myorbit.getIC().setDT(initial_dt);
+                            myorbit.getIC().setSign(signs[index_s]);
+                            myorbit.reset();
+                            myorbit.computeOrbitAtOnce();
+
+
+                            System.out.println("GR Orbits plot the orbit - b based");
+                            System.out.println("R: "+myorbit.getIC().getR());
+                            System.out.println("a: "+myorbit.getIC().getA());
+                            System.out.println("InvB: "+myorbit.getIC().getInvB());
+                            System.out.println("Sign: "+myorbit.getIC().getSign());
+                            System.out.println("dt: "+myorbit.getIC().getDT());
+                            System.out.println("Num Points: "+myorbit.getIC().getNumPoints());
+
+                            Object[][] datatmp = myorbit.getOrbitData();
+                            for(int index=0;index<datatmp.length;index++){
+                                //System.out.println(" "index+","+orbit.getIC().getInvB()+","+datatmp[index][0]+" ,r:"+datatmp[index][1]+" ,phi: "+datatmp[index][2]);
+                                int reorder_index = datatmp.length - index -1;
+                                //System.out.println(" "+index+","+myorbit.getIC().getInvB()+","+myorbit.getIC().getSign()+","+datatmp[reorder_index][0]+","+datatmp[reorder_index][1]+","+datatmp[reorder_index][2]);
+                                writer.println(" "+index+","+myorbit.getIC().getInvB()+","+myorbit.getIC().getSign()+","+datatmp[reorder_index][0]+","+datatmp[reorder_index][1]+","+datatmp[reorder_index][2]);
+                            }
+
+
+                        }
+
+                        
+
+
+                    }
+
+                    writer.close();
+                
+                } catch (UnsupportedEncodingException e3){
+                    e3.printStackTrace();
+                }
+                
+            } 
+            catch (FileNotFoundException e2)
+            {
+                e2.printStackTrace();
+            }
+
+
+            
+
             orbDrawingPanel.repaint();
             potDrawingPanel.repaint();
             odInspector.repaint();
@@ -917,6 +1030,7 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
                 dtvalue = (format9.parse(response)).doubleValue();
 
                 orbit.getODESolver().initialize(dtvalue);
+                orbit.getIC().setDT(dtvalue);
                 orbit.reset();
                 pnlButtons.setBorder(BorderFactory.createTitledBorder("t = ".concat(format.format(orbit.getT()).concat(" M     \u03c4 = ").concat(format.format(orbit.getTau()))).concat(" M")));
                 odInspector.repaint();
@@ -1126,6 +1240,11 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
             potDrawingPanel.repaint();
             rMaxOld = orbDrawingPanel.getRMax();
         } else if (evt.getPropertyName().equals("icInspectorChangeLm")) {
+
+            System.out.println("GR Orbit property change");
+            System.out.print(evt.getPropertyName());
+        
+
             pnlButtons.setBorder(BorderFactory.createTitledBorder("t = ".concat(format.format(orbit.getT()).concat(" M     \u03c4 = ").concat(format.format(orbit.getTau()))).concat(" M")));
             double fooLm=orbit.getIC().getLm();
             sliderControls.setLm(orbit.getIC().getLm());
@@ -1154,6 +1273,7 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
             rMaxOld = orbDrawingPanel.getRMax();
         } else if (evt.getPropertyName().equals("icInspectorChangeR")) {
             orbit.reset();
+            System.out.println("GR Orbits change R");
             //orbit.adjustDTAutomatically();
             pnlButtons.setBorder(BorderFactory.createTitledBorder("t = ".concat(format.format(orbit.getT()).concat(" M     \u03c4 = ").concat(format.format(orbit.getTau()))).concat(" M")));
             if ((menuItemBoyerLindquistL.isSelected()||menuItemRainL.isSelected())) {
@@ -1609,12 +1729,13 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
             iLogo = null;
         }
 
-        GRorbits frame = new GRorbits();
-        frame.setTitle("GRorbits - Untitled");
+      GRorbits frame = new GRorbits();
+        frame.setTitle("GRorbits II - Untitled");
         frame.setSize(1024, 633);
         frame.setIconImage(iLogo);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.initialize();
         frame.setVisible(true);
+        
     }
 }
