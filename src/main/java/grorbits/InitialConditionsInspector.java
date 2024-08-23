@@ -111,7 +111,9 @@ public class InitialConditionsInspector extends javax.swing.JComponent implement
         int row = e.getFirstRow();
         //int column = e.getColumn();
         //TableModel model = (TableModel)e.getSource();
-        if ((orbit.getState().length==6)) {//if we have MATTER orbit
+        // falonso: this is an error, changed to different than 6
+        // if ((orbit.getState().length==6)) {//if we have MATTER orbit
+        if ((orbit.getState().length!=6)) {//if we have MATTER orbit
             if (row == 1) {//setting Em
                 support.firePropertyChange("icInspectorChangeEm", null, null);
             } else if (row == 2) {//setting Lm
@@ -131,6 +133,7 @@ public class InitialConditionsInspector extends javax.swing.JComponent implement
                 support.firePropertyChange("icInspectorChangeNumPoints", null, null);
             }
         } else {//if we have LIGHT orbit
+            System.out.println("Light change property");
             if (row == 1) {//setting 1/invB !!! changed
                 support.firePropertyChange("icInspectorChangeEm", null, null);
             } else if (row == 2) {//setting Lm
