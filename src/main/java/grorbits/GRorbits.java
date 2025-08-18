@@ -102,6 +102,9 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
     javax.swing.Timer timerStepForward, timerStepBack;
     int timerSFSteps=0, timerSBSteps=0;
 
+    // blips
+    Properties blipProperties = new Properties();
+
     public GRorbits() {
         //  look and feel
         try {
@@ -759,6 +762,8 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
 
 
             double initial_r=orbit.getIC().getR();
+            // making dt negative shows incoming rays to certain Event
+            // hardcoding first
             double initial_dt=orbit.getIC().getDT();
             int initial_numpoints=orbit.getIC().getNumPoints();
             //int initial_numpoints=4000;
@@ -768,20 +773,36 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
                 try{
                     PrintWriter writer = new PrintWriter("..\\..\\blip_"+initial_r+".txt", "UTF-8");
 
-                    double[] inv_b_values = {0.0,0.00000001,0.0000001,0.000001,0.00001,
-                        0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008,0.0009,
-                        0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,
-                        0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,
-                        0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,
-                        0,19245,
-                        0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,
-                        0.3,0.4,0.5,0.6,0.7,0.8,0.9,
-                        1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,
-                        10.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,
-                        100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,900.0,
-                        1000.0,2000.0,3000.0,4000.0,5000.0,6000.0,7000.0,8000.0,9000.0,
-                        10000.0,20000.0,30000.0,40000.0,50000.0,60000.0,70000.0,80000.0,90000.0,
-                        100000.0,1000000.0,10000000.0,Double.POSITIVE_INFINITY};
+                    /* double[] inv_b_values = {0.0,
+                        1.0e-20,1.0e-19,1.0e-18,1.0e-17,1.0e-16,1.0e-15,1.0e-14,1.0e-13,1.0e-12,1.0e-11,
+                        1.0e-10,1.0e-9,1.0e-8,1.0e-7,1.0e-6,1.0e-5,1.0e-4,1.0e-3,1.0e-2,1.0e-1,
+                        1.0,
+                        1.0e1,1.0e2,1.0e3,1.0e4,1.0e5,1.0e6,1.0e7,1.0e8,1.0e9,1.0e10,
+                        //0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008,0.0009,
+                        //0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,
+                        //0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,
+                        //0.1,0.11,0.12,0.13,0.14,0.15,0.16,0.17,0.18,0.19,
+                        //0,19245,
+                        //0.2,0.21,0.22,0.23,0.24,0.25,0.26,0.27,0.28,0.29,
+                        //0.3,0.4,0.5,0.6,0.7,0.8,0.9,
+                        //1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,
+                        //10.0,20.0,30.0,40.0,50.0,60.0,70.0,80.0,90.0,
+                        //100.0,200.0,300.0,400.0,500.0,600.0,700.0,800.0,900.0,
+                        //1000.0,2000.0,3000.0,4000.0,5000.0,6000.0,7000.0,8000.0,9000.0,
+                        //10000.0,20000.0,30000.0,40000.0,50000.0,60000.0,70000.0,80000.0,90000.0,
+                        //100000.0,1000000.0,10000000.0,
+                        //1.0e7,
+                        Double.POSITIVE_INFINITY
+                    };
+                    */
+
+                    String[] inv_b_strings = blipProperties.getProperty("inv_b_values").split(",");
+
+                    double[] inv_b_values = new double[inv_b_strings.length];
+
+                    for (int index_str=0;index_str<inv_b_strings.length;index_str++){
+                        inv_b_values[index_str]=Double.parseDouble(inv_b_strings[index_str]);
+                    }
                         
 
                     // double[] inv_b_values = {Double.POSITIVE_INFINITY};
@@ -843,6 +864,12 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
                     }
 
                     writer.close();
+
+                    System.out.println(blipProperties);
+
+                    if ( blipProperties.getProperty("blip_mode").equals("true" )){
+                        System.out.println("BLIP MODE WAS TRUE");
+                    }
                 
                 } catch (UnsupportedEncodingException e3){
                     e3.printStackTrace();
@@ -1483,7 +1510,18 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
             System.out.println("error\n\n" + e.toString());
         }
 
+        System.out.println(prop);
+        System.out.println(prop.getProperty("blip_mode"));
+
+        if (prop.getProperty("blip_mode").equals("true")){
+            System.out.println("IS BLIP MODE");
+            blipProperties.setProperty("blip_mode","true");
+            blipProperties.setProperty("inv_b_values",prop.getProperty("inv_b_values"));
+        }
+
         reconstructProgramState(prop);
+
+        
 
     }
 
@@ -1728,6 +1766,9 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
             System.err.println("Couldn't find file.");
             iLogo = null;
         }
+        
+        System.out.println(args[0]);
+        
 
       GRorbits frame = new GRorbits();
         frame.setTitle("GRorbits II - Untitled");
@@ -1736,6 +1777,11 @@ public class GRorbits extends JFrame implements Runnable, ActionListener, Proper
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.initialize();
         frame.setVisible(true);
+
+
+        File inFile = new File(args[0]);
+        frame.readFromFile(inFile);
+        frame.setTitle("GRorbits - ".concat(inFile.getName()));
         
     }
 }
